@@ -21,7 +21,6 @@ public class HttpResultsOperationFilter : IOperationFilter
 
         if(typeof(IEndpointMetadataProvider).IsAssignableFrom(actionReturnType))
         {
-
             var populateMetadataMethod = actionReturnType.GetMethod("Microsoft.AspNetCore.Http.Metadata.IEndpointMetadataProvider.PopulateMetadata", BindingFlags.Static | BindingFlags.NonPublic);
             if(populateMetadataMethod == null) return;
 
@@ -54,7 +53,7 @@ public class HttpResultsOperationFilter : IOperationFilter
     }
 
     private static bool IsHttpResults(Type type)
-    => type.Namespace == "Microsoft.AspNetCore.Http.HttpResults";
+        => type.Namespace == "Microsoft.AspNetCore.Http.HttpResults";
 
     private sealed class MetadataEndpointBuilder : EndpointBuilder
     {

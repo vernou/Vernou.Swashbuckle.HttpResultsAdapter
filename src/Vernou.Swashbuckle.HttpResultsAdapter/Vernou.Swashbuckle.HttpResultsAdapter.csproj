@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <Version>1.0.0-preview.1</Version>
     <Title>Swashbuckle adapter to HttpResults type</Title>
     <Description>Swashbuckle adapter to generate Open Api responses to action that returns HttpResults type</Description>
     <Authors>Cédric VERNOU</Authors>
@@ -15,9 +16,14 @@
     <PackageProjectUrl>https://github.com/vernou/Vernou.Swashbuckle.HttpResultsAdapter</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>aspnetcore, swashbuckle, typedresults, httpresults</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/vernou/Vernou.Swashbuckle.HttpResultsAdapter.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0" />

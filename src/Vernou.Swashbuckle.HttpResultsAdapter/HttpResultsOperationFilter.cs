@@ -18,9 +18,6 @@ using System.Reflection;
 /// </summary>
 public class HttpResultsOperationFilter : IOperationFilter
 {
-    /// <summary>
-    /// this is the default for controllers
-    /// </summary>
     private static readonly MediaTypeCollection defaultMediaTypes = new MediaTypeCollection
     {
         "application/json",
@@ -28,17 +25,9 @@ public class HttpResultsOperationFilter : IOperationFilter
     };
 
     /// <summary>
-    /// media type for text/plain
+    /// this is the default for controllers
     /// </summary>
-    private static readonly MediaTypeCollection textPlainMediaTypes = new MediaTypeCollection 
-    { 
-        "text/plain" 
-    };
-
-    /// <summary>
-    /// empty MediaTypeCollection
-    /// </summary>
-    private static readonly MediaTypeCollection emptyMediaTypes = new MediaTypeCollection();
+    public static MediaTypeCollection DefaultMediaTypes => defaultMediaTypes;
 
     void IOperationFilter.Apply(OpenApiOperation operation, OperationFilterContext context)
     {
@@ -80,7 +69,7 @@ public class HttpResultsOperationFilter : IOperationFilter
                 var producesAttribute = context.MethodInfo.GetCustomAttributes(typeof(ProducesAttribute), true).FirstOrDefault() as ProducesAttribute;
                 producesAttribute ??= context.MethodInfo.DeclaringType?.GetCustomAttributes(typeof(ProducesAttribute), true).FirstOrDefault() as ProducesAttribute;
                 // get list of media types produced by the method or the default if null
-                var mediaTypes = producesAttribute?.ContentTypes ?? defaultMediaTypes;
+                var mediaTypes = producesAttribute?.ContentTypes ?? DefaultMediaTypes;
 
                 foreach (var responseType in responseTypes)
                 {

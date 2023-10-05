@@ -1,5 +1,6 @@
 namespace Vernou.Swashbuckle.HttpResultsAdapter.Demo.Tests;
 
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Readers;
@@ -98,10 +99,12 @@ public class HttpResultsAsOpenApiResponse
 
         var response = responses.ShouldHaveSingleItem();
         response.Key.ShouldBe(expected);
-        var content = response.Value.Content.ShouldHaveSingleItem();
-        content.Key.ShouldBe("application/json");
-        content.Value.Schema.Type.ShouldBe("object");
-        content.Value.Schema.Reference.Id.ShouldBe("Foo");
+        response.Value.Content.Count.ShouldBeEquivalentTo(HttpResultsOperationFilter.DefaultMediaTypes.Count);
+        foreach (var contentItem in response.Value.Content) {
+            HttpResultsOperationFilter.DefaultMediaTypes.Contains(contentItem.Key).ShouldBeTrue();
+            contentItem.Value.Schema.Type.ShouldBe("object");
+            contentItem.Value.Schema.Reference.Id.ShouldBe("Foo");
+        }
     }
 
     [Theory]
@@ -124,10 +127,13 @@ public class HttpResultsAsOpenApiResponse
 
         var response = responses.ShouldHaveSingleItem();
         response.Key.ShouldBe(expected);
-        var content = response.Value.Content.ShouldHaveSingleItem();
-        content.Key.ShouldBe("application/json");
-        content.Value.Schema.Type.ShouldBe("object");
-        content.Value.Schema.Reference.Id.ShouldBe("Foo");
+        response.Value.Content.Count.ShouldBeEquivalentTo(HttpResultsOperationFilter.DefaultMediaTypes.Count);
+        foreach (var contentItem in response.Value.Content)
+        {
+            HttpResultsOperationFilter.DefaultMediaTypes.Contains(contentItem.Key).ShouldBeTrue();
+            contentItem.Value.Schema.Type.ShouldBe("object");
+            contentItem.Value.Schema.Reference.Id.ShouldBe("Foo");
+        }
     }
 
     [Theory]

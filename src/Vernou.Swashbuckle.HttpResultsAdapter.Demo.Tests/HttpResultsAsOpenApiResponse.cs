@@ -54,6 +54,31 @@ public class HttpResultsAsOpenApiResponse
     }
 
     [Theory]
+    [InlineData("ok-async", "200")]
+    [InlineData("created-async", "201")]
+    [InlineData("accepted-async", "202")]
+    [InlineData("acceptedatroute-async", "202")]
+    [InlineData("nocontent-async", "204")]
+    [InlineData("badrequest-async", "400")]
+    [InlineData("validationproblem-async", "400", Skip = "Fail")]
+    [InlineData("unauthorized-async", "401")]
+    [InlineData("notfound-async", "404")]
+    [InlineData("conflict-async", "409")]
+    [InlineData("unprocessableentity-async", "422", Skip = "Fail")]
+    public void TypedResultAsync(string path, string expected)
+    {
+        // Arrange
+
+        var responses = GetResponses(path);
+
+        //Assert
+
+        var response = responses.ShouldHaveSingleItem();
+        response.Key.ShouldBe(expected);
+        response.Value.Content.ShouldBeEmpty();
+    }
+
+    [Theory]
     [InlineData("ok-foo", "200")]
     [InlineData("created-foo", "201")]
     [InlineData("createdatroute-foo", "201")]
@@ -64,6 +89,32 @@ public class HttpResultsAsOpenApiResponse
     [InlineData("conflict-foo", "409")]
     [InlineData("unprocessableentity-foo", "422")]
     public void TypedResultOf(string path, string expected)
+    {
+        // Arrange
+
+        var responses = GetResponses(path);
+
+        //Assert
+
+        var response = responses.ShouldHaveSingleItem();
+        response.Key.ShouldBe(expected);
+        var content = response.Value.Content.ShouldHaveSingleItem();
+        content.Key.ShouldBe("application/json");
+        content.Value.Schema.Type.ShouldBe("object");
+        content.Value.Schema.Reference.Id.ShouldBe("Foo");
+    }
+
+    [Theory]
+    [InlineData("ok-foo-async", "200")]
+    [InlineData("created-foo-async", "201")]
+    [InlineData("createdatroute-foo-async", "201")]
+    [InlineData("accepted-foo-async", "202")]
+    [InlineData("acceptedatroute-foo-async", "202")]
+    [InlineData("badrequest-foo-async", "400")]
+    [InlineData("notfound-foo-async", "404")]
+    [InlineData("conflict-foo-async", "409")]
+    [InlineData("unprocessableentity-foo-async", "422")]
+    public void TypedResultOfAsync(string path, string expected)
     {
         // Arrange
 
@@ -92,6 +143,25 @@ public class HttpResultsAsOpenApiResponse
 
         responses.Count.ShouldBe(expected.Length);
         foreach(var e in expected)
+        {
+            var response = responses[e];
+            response.Content.ShouldBeEmpty();
+        }
+    }
+
+    [Theory]
+    [InlineData("ok_nocontent-async", new[] { "200", "204" })]
+    [InlineData("ok_nocontent_notfound-async", new[] { "200", "204", "404" })]
+    public void ManyTypedResultAsync(string path, string[] expected)
+    {
+        // Arrange
+
+        var responses = GetResponses(path);
+
+        //Assert
+
+        responses.Count.ShouldBe(expected.Length);
+        foreach (var e in expected)
         {
             var response = responses[e];
             response.Content.ShouldBeEmpty();

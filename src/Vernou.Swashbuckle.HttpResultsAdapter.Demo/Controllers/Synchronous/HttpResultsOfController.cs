@@ -1,10 +1,10 @@
-﻿namespace Vernou.Swashbuckle.HttpResultsAdapter.Demo.Controllers;
+﻿namespace Vernou.Swashbuckle.HttpResultsAdapter.Demo.Controllers.Synchronous;
 
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Vernou.Swashbuckle.HttpResultsAdapter.Demo.Models;
 
-public class HttpResultsOfController
+public class HttpResultsOfController : Controller
 {
     [HttpGet("ok-foo")]
     public Ok<Foo> ReturnOkOf() => TypedResults.Ok(new Foo());

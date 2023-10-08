@@ -16,7 +16,7 @@ public class HttpResultsOperationFilter : IOperationFilter
 {
     void IOperationFilter.Apply(OpenApiOperation operation, OperationFilterContext context)
     {
-        var actionReturnType = context.MethodInfo.ReturnType;
+        var actionReturnType = UnwrapTask(context.MethodInfo.ReturnType);
         if(!IsHttpResults(actionReturnType)) return;
 
         if(typeof(IEndpointMetadataProvider).IsAssignableFrom(actionReturnType))
@@ -54,6 +54,11 @@ public class HttpResultsOperationFilter : IOperationFilter
 
     private static bool IsHttpResults(Type type)
         => type.Namespace == "Microsoft.AspNetCore.Http.HttpResults";
+
+    private static Type UnwrapTask(Type type)
+        => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Task<>)
+                  ? type.GetGenericArguments()[0]
+                  : type;
 
     private sealed class MetadataEndpointBuilder : EndpointBuilder
     {

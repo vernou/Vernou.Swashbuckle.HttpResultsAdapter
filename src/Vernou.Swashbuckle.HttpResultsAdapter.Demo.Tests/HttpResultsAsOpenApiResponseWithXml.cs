@@ -87,6 +87,6 @@ public class HttpResultsAsOpenApiResponseWithXml
     [Fact]
     public void SomeTest()
     {
-
+        var responses = GetResponses("ok-foo");
     }
 }

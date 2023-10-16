@@ -49,38 +49,6 @@ public class HttpResultsAsOpenApiResponseWithXml
         }
     }
 
-    public static IEnumerable<object[]> TypedResultData()
-    {
-        return DuplicateWithAsync(new[] {
-            ("ok", "200"),
-            ("created", "201"),
-            ("accepted", "202"),
-            ("acceptedatroute", "202"),
-            ("nocontent", "204"),
-            ("badrequest", "400"),
-            ("unauthorized", "401"),
-            ("notfound", "404"),
-            ("conflict", "409")
-        });
-    }
-
-    [Theory]
-    [MemberData(nameof(TypedResultData))]
-    [InlineData("validationproblem", "400", Skip = "Fail")]
-    [InlineData("unprocessableentity", "422", Skip = "Fail")]
-    public void TypedResult(string path, string expected)
-    {
-        // Arrange
-
-        var responses = GetResponses(path);
-
-        //Assert
-
-        var response = responses.ShouldHaveSingleItem();
-        response.Key.ShouldBe(expected);
-        response.Value.Content.ShouldBeEmpty();
-    }
-
     public static IEnumerable<object[]> TypedResultOfData()
     {
         return DuplicateWithAsync(new[] {
@@ -118,41 +86,6 @@ public class HttpResultsAsOpenApiResponseWithXml
             var xmlContent = response.Value.Content["application/xml"];
             xmlContent.Schema.Type.ShouldBe("object");
             xmlContent.Schema.Reference.Id.ShouldBe("Foo");
-        }
-    }
-
-    public static IEnumerable<object[]> ManyTypedResultData()
-    {
-        IEnumerable<object[]> DuplicateWithAsync(IEnumerable<(string, string[])> pathsWithExpectedStatus)
-        {
-            foreach(var path in pathsWithExpectedStatus)
-            {
-                yield return new object[] { path.Item1, path.Item2 };
-                yield return new object[] { path.Item1 + "-async", path.Item2 };
-            }
-        }
-
-        return DuplicateWithAsync(new[] {
-            ("ok_nocontent", new [] { "200", "204" }),
-            ("ok_nocontent_notfound", new [] { "200", "204", "404" }),
-        });
-    }
-
-    [Theory]
-    [MemberData(nameof(ManyTypedResultData))]
-    public void ManyTypedResult(string path, string[] expected)
-    {
-        // Arrange
-
-        var responses = GetResponses(path);
-
-        //Assert
-
-        responses.Count.ShouldBe(expected.Length);
-        foreach(var e in expected)
-        {
-            var response = responses[e];
-            response.Content.ShouldBeEmpty();
         }
     }
 }

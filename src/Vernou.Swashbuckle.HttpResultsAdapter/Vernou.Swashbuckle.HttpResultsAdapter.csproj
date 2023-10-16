@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>1.0.0-preview.1</Version>
+    <Version>1.0.1</Version>
     <Title>Swashbuckle adapter to HttpResults type</Title>
     <Description>Swashbuckle adapter to generate Open Api responses to action that returns HttpResults type</Description>
     <Authors>Cédric VERNOU</Authors>
-    <PackageId>Vernou.Swashbuckle.HttpResultsAdapter.Beta</PackageId>
+    <PackageId>Vernou.Swashbuckle.HttpResultsAdapter</PackageId>
     <PackageProjectUrl>https://github.com/vernou/Vernou.Swashbuckle.HttpResultsAdapter</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>aspnetcore, swashbuckle, typedresults, httpresults</PackageTags>

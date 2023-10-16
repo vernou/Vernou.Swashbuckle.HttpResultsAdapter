@@ -11,13 +11,13 @@ public class HttpResultsAsOpenApiResponseWithXml
 {
     private class ApiWithXmlFactory : WebApplicationFactory<Program>
     {
-        protected override void ConfigureWebHost(IWebHostBuilder builder)
-        {
-            base.ConfigureWebHost(builder);
-            builder.ConfigureTestServices(services =>
-                services.AddControllers().AddXmlSerializerFormatters()
-            );
-        }
+        //protected override void ConfigureWebHost(IWebHostBuilder builder)
+        //{
+        //    base.ConfigureWebHost(builder);
+        //    builder.ConfigureTestServices(services =>
+        //        services.AddControllers().AddXmlSerializerFormatters()
+        //    );
+        //}
     }
 
     private static readonly Lazy<OpenApiDocument> _document =

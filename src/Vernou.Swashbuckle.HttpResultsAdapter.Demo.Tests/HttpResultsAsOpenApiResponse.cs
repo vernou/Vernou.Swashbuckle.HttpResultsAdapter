@@ -10,9 +10,9 @@ public class HttpResultsAsOpenApiResponse
     private static readonly Lazy<OpenApiDocument> _document =
         new(() =>
         {
-            var factory = new WebApplicationFactory<Program>();
-            var client = factory.CreateClient();
-            var httpResponse = client.GetAsync("/swagger/v1/swagger.json").Result;
+            using var factory = new WebApplicationFactory<Program>();
+            using var client = factory.CreateClient();
+            using var httpResponse = client.GetAsync("/swagger/v1/swagger.json").Result;
             httpResponse.EnsureSuccessStatusCode();
             var document = new OpenApiStreamReader().Read(httpResponse.Content.ReadAsStream(), out var diagnostic);
             diagnostic.Errors.ShouldBeEmpty();

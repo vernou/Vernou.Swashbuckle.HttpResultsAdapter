@@ -1,5 +1,6 @@
 ﻿namespace Vernou.Swashbuckle.HttpResultsAdapter.Demo.Tests;
 
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -55,38 +56,39 @@ public class HttpResultsAsOpenApiResponseWithXml
     {
         return DuplicateWithAsync(new[] {
             ("ok-foo", "200"),
-            //("created-foo", "201"),
-            //("createdatroute-foo", "201"),
-            //("accepted-foo", "202"),
-            //("acceptedatroute-foo", "202"),
-            //("badrequest-foo", "400"),
-            //("notfound-foo", "404"),
-            //("conflict-foo", "409"),
-            //("unprocessableentity-foo", "422"),
+            ("created-foo", "201"),
+            ("createdatroute-foo", "201"),
+            ("accepted-foo", "202"),
+            ("acceptedatroute-foo", "202"),
+            ("badrequest-foo", "400"),
+            ("notfound-foo", "404"),
+            ("conflict-foo", "409"),
+            ("unprocessableentity-foo", "422"),
         });
     }
 
-    //[Theory]
-    //[MemberData(nameof(TypedResultOfData))]
-    //public void TypedResultOf(string path, string expected)
-    //{
-    //    // Arrange
-
-    //    var responses = GetResponses(path);
-
-    //    //Assert
-
-    //    var response = responses.ShouldHaveSingleItem();
-    //    response.Key.ShouldBe(expected);
-    //    var content = response.Value.Content.ShouldHaveSingleItem();
-    //    content.Key.ShouldBe("application/json");
-    //    content.Value.Schema.Type.ShouldBe("object");
-    //    content.Value.Schema.Reference.Id.ShouldBe("Foo");
-    //}
-
-    [Fact]
-    public void SomeTest()
+    [Theory]
+    [MemberData(nameof(TypedResultOfData))]
+    public void TypedResultOf(string path, string expected)
     {
-        var responses = GetResponses("ok-foo");
+        // Arrange
+
+        var responses = GetResponses(path);
+
+        //Assert
+
+        var response = responses.ShouldHaveSingleItem();
+        response.Key.ShouldBe(expected);
+        response.Value.Content.Count.ShouldBe(2);
+        {
+            var content = response.Value.Content["application/json"];
+            content.Schema.Type.ShouldBe("object");
+            content.Schema.Reference.Id.ShouldBe("Foo");
+        }
+        {
+            var content = response.Value.Content["application/xml"];
+            content.Schema.Type.ShouldBe("object");
+            content.Schema.Reference.Id.ShouldBe("Foo");
+        }
     }
 }

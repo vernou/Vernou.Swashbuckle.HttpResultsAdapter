@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -46,6 +47,9 @@ public class HttpResultsOperationFilter : IOperationFilter
 
     void IOperationFilter.Apply(OpenApiOperation operation, OperationFilterContext context)
     {
+
+        if(!IsControllerAction(context)) return;
+
         var actionReturnType = UnwrapTask(context.MethodInfo.ReturnType);
         if(!IsHttpResults(actionReturnType)) return;
 
@@ -84,6 +88,9 @@ public class HttpResultsOperationFilter : IOperationFilter
 
         }
     }
+
+    private static bool IsControllerAction(OperationFilterContext context)
+        => context.ApiDescription.ActionDescriptor is ControllerActionDescriptor;
 
     private static bool IsHttpResults(Type type)
         => type.Namespace == "Microsoft.AspNetCore.Http.HttpResults";

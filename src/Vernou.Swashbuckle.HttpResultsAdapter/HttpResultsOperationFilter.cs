@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http.Metadata;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
@@ -14,6 +16,34 @@ using System.Reflection;
 /// </summary>
 public class HttpResultsOperationFilter : IOperationFilter
 {
+    private readonly Lazy<string[]> _contentTypes;
+
+    /// <summary>
+    /// Constructor to inject services
+    /// </summary>
+    /// <param name="mvc">MVC options to define response content types</param>
+    public HttpResultsOperationFilter(IOptions<MvcOptions> mvc)
+    {
+        _contentTypes = new Lazy<string[]>(() =>
+        {
+            var apiResponseTypes = new List<string>();
+            if(mvc.Value == null)
+            {
+                apiResponseTypes.Add("application/json");
+            }
+            else
+            {
+                var jsonApplicationType = mvc.Value.FormatterMappings.GetMediaTypeMappingForFormat("json");
+                if(jsonApplicationType != null)
+                    apiResponseTypes.Add(jsonApplicationType);
+                var xmlApplicationType = mvc.Value.FormatterMappings.GetMediaTypeMappingForFormat("xml");
+                if(xmlApplicationType != null)
+                    apiResponseTypes.Add(xmlApplicationType);
+            }
+            return apiResponseTypes.ToArray();
+        });
+    }
+
     void IOperationFilter.Apply(OpenApiOperation operation, OperationFilterContext context)
     {
         var actionReturnType = UnwrapTask(context.MethodInfo.ReturnType);
@@ -38,7 +68,10 @@ public class HttpResultsOperationFilter : IOperationFilter
                 if(responseType.Type != null && responseType.Type != typeof(void))
                 {
                     var schema = context.SchemaGenerator.GenerateSchema(responseType.Type, context.SchemaRepository);
-                    oar.Content.Add("application/json", new OpenApiMediaType { Schema = schema });
+                    foreach(var contentType in _contentTypes.Value)
+                    {
+                        oar.Content.Add(contentType, new OpenApiMediaType { Schema = schema });
+                    }
                 }
 
                 operation.Responses.Add(statusCode.ToString(), oar);

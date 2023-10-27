@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 /// <summary>
 /// OperationFilter to generate OAS response to action that return HttpResults type
@@ -66,8 +67,8 @@ public class HttpResultsOperationFilter : IOperationFilter
             operation.Responses.Clear();
             foreach(var responseType in responseTypes)
             {
-                var statusCode = responseType.StatusCode;
-                var oar = new OpenApiResponse { Description = ReasonPhrases.GetReasonPhrase(statusCode) };
+                var statusCode = responseType.StatusCode.ToString();
+                var oar = new OpenApiResponse { Description = GetResponseDescription(statusCode) };
 
                 if(responseType.Type != null && responseType.Type != typeof(void))
                 {
@@ -78,7 +79,7 @@ public class HttpResultsOperationFilter : IOperationFilter
                     }
                 }
 
-                operation.Responses.Add(statusCode.ToString(), oar);
+                operation.Responses.Add(statusCode, oar);
             }
         }
         else if(actionReturnType == typeof(UnauthorizedHttpResult))
@@ -99,6 +100,38 @@ public class HttpResultsOperationFilter : IOperationFilter
         => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Task<>)
                   ? type.GetGenericArguments()[0]
                   : type;
+
+    private static string? GetResponseDescription(string statusCode)
+        => ResponseDescriptionMap
+            .FirstOrDefault(entry => Regex.IsMatch(statusCode, entry.Key))
+            .Value;
+
+    private static readonly IReadOnlyCollection<KeyValuePair<string, string>> ResponseDescriptionMap = new[]
+    {
+        new KeyValuePair<string, string>("1\\d{2}", "Information"),
+
+        new KeyValuePair<string, string>("201", "Created"),
+        new KeyValuePair<string, string>("202", "Accepted"),
+        new KeyValuePair<string, string>("204", "No Content"),
+        new KeyValuePair<string, string>("2\\d{2}", "Success"),
+
+        new KeyValuePair<string, string>("304", "Not Modified"),
+        new KeyValuePair<string, string>("3\\d{2}", "Redirect"),
+
+        new KeyValuePair<string, string>("400", "Bad Request"),
+        new KeyValuePair<string, string>("401", "Unauthorized"),
+        new KeyValuePair<string, string>("403", "Forbidden"),
+        new KeyValuePair<string, string>("404", "Not Found"),
+        new KeyValuePair<string, string>("405", "Method Not Allowed"),
+        new KeyValuePair<string, string>("406", "Not Acceptable"),
+        new KeyValuePair<string, string>("408", "Request Timeout"),
+        new KeyValuePair<string, string>("409", "Conflict"),
+        new KeyValuePair<string, string>("429", "Too Many Requests"),
+        new KeyValuePair<string, string>("4\\d{2}", "Client Error"),
+
+        new KeyValuePair<string, string>("5\\d{2}", "Server Error"),
+        new KeyValuePair<string, string>("default", "Error")
+    };
 
     private sealed class MetadataEndpointBuilder : EndpointBuilder
     {

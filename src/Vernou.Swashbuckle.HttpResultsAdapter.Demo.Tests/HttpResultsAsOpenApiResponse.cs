@@ -28,35 +28,37 @@ public class HttpResultsAsOpenApiResponse
         return responses;
     }
 
-    private static IEnumerable<object[]> DuplicateWithAsync(IEnumerable<(string, string)> pathsWithExpectedStatus)
+    private static IEnumerable<object[]> DuplicateWithAsync(IEnumerable<object[]> pathsWithExpected)
     {
-        foreach(var path in pathsWithExpectedStatus)
+        foreach(var path in pathsWithExpected)
         {
-            yield return new object[] { path.Item1, path.Item2 };
-            yield return new object[] { path.Item1 + "-async", path.Item2 };
+            yield return path;
+            var pathAsync = (object[])path.Clone();
+            pathAsync[0] = pathAsync[0].ToString() + "-async";
+            yield return pathAsync;
         }
     }
 
     public static IEnumerable<object[]> TypedResultData()
     {
         return DuplicateWithAsync(new[] {
-            ("ok", "200"),
-            ("created", "201"),
-            ("accepted", "202"),
-            ("acceptedatroute", "202"),
-            ("nocontent", "204"),
-            ("badrequest", "400"),
-            ("unauthorized", "401"),
-            ("notfound", "404"),
-            ("conflict", "409")
+            new object[] { "ok", "200", "Success" },
+            new object[] { "created", "201", "Created" },
+            new object[] { "accepted", "202", "Accepted" },
+            new object[] { "acceptedatroute", "202", "Accepted" },
+            new object[] { "nocontent", "204", "No Content" },
+            new object[] { "badrequest", "400", "Bad Request" },
+            new object[] { "unauthorized", "401", "Unauthorized" },
+            new object[] { "notfound", "404", "Not Found" },
+            new object[] { "conflict", "409", "Conflict" }
         });
     }
 
     [Theory]
     [MemberData(nameof(TypedResultData))]
-    [InlineData("validationproblem", "400", Skip = "Fail")]
-    [InlineData("unprocessableentity", "422", Skip = "Fail")]
-    public void TypedResult(string path, string expected)
+    [InlineData("validationproblem", "400", "Bad Request", Skip = "Fail")]
+    [InlineData("unprocessableentity", "422", "Client Error", Skip = "Fail")]
+    public void TypedResult(string path, string expectedStatusCode, string expectedDescription)
     {
         // Arrange
 
@@ -65,28 +67,29 @@ public class HttpResultsAsOpenApiResponse
         //Assert
 
         var response = responses.ShouldHaveSingleItem();
-        response.Key.ShouldBe(expected);
+        response.Key.ShouldBe(expectedStatusCode);
+        response.Value.Description.ShouldBe(expectedDescription);
         response.Value.Content.ShouldBeEmpty();
     }
 
     public static IEnumerable<object[]> TypedResultOfData()
     {
         return DuplicateWithAsync(new[] {
-            ("ok-foo", "200"),
-            ("created-foo", "201"),
-            ("createdatroute-foo", "201"),
-            ("accepted-foo", "202"),
-            ("acceptedatroute-foo", "202"),
-            ("badrequest-foo", "400"),
-            ("notfound-foo", "404"),
-            ("conflict-foo", "409"),
-            ("unprocessableentity-foo", "422"),
+            new object[] { "ok-foo", "200", "Success" },
+            new object[] { "created-foo", "201", "Created" },
+            new object[] { "createdatroute-foo", "201", "Created" },
+            new object[] { "accepted-foo", "202", "Accepted" },
+            new object[] { "acceptedatroute-foo", "202", "Accepted" },
+            new object[] { "badrequest-foo", "400", "Bad Request" },
+            new object[] { "notfound-foo", "404", "Not Found" },
+            new object[] { "conflict-foo", "409", "Conflict" },
+            new object[] { "unprocessableentity-foo", "422", "Client Error" }
         });
     }
 
     [Theory]
     [MemberData(nameof(TypedResultOfData))]
-    public void TypedResultOf(string path, string expected)
+    public void TypedResultOf(string path, string expectedStatusCode, string expectedDescription)
     {
         // Arrange
 
@@ -95,7 +98,8 @@ public class HttpResultsAsOpenApiResponse
         //Assert
 
         var response = responses.ShouldHaveSingleItem();
-        response.Key.ShouldBe(expected);
+        response.Key.ShouldBe(expectedStatusCode);
+        response.Value.Description.ShouldBe(expectedDescription);
         var content = response.Value.Content.ShouldHaveSingleItem();
         content.Key.ShouldBe("application/json");
         content.Value.Schema.Type.ShouldBe("object");
@@ -104,24 +108,15 @@ public class HttpResultsAsOpenApiResponse
 
     public static IEnumerable<object[]> ManyTypedResultData()
     {
-        IEnumerable<object[]> DuplicateWithAsync(IEnumerable<(string, string[])> pathsWithExpectedStatus)
-        {
-            foreach(var path in pathsWithExpectedStatus)
-            {
-                yield return new object[] { path.Item1, path.Item2 };
-                yield return new object[] { path.Item1 + "-async", path.Item2 };
-            }
-        }
-
-        return DuplicateWithAsync(new[] {
-            ("ok_nocontent", new [] { "200", "204" }),
-            ("ok_nocontent_notfound", new [] { "200", "204", "404" }),
+        return DuplicateWithAsync(new [] {
+            new object[] { "ok_nocontent", new [] { ("200", "Success"), ("204", "No Content") } },
+            new object[] { "ok_nocontent_notfound", new [] { ("200", "Success"), ("204", "No Content"), ("404", "Not Found") }}
         });
     }
 
     [Theory]
     [MemberData(nameof(ManyTypedResultData))]
-    public void ManyTypedResult(string path, string[] expected)
+    public void ManyTypedResult(string path, (string StatusCode, string Description)[] expected)
     {
         // Arrange
 
@@ -132,7 +127,8 @@ public class HttpResultsAsOpenApiResponse
         responses.Count.ShouldBe(expected.Length);
         foreach(var e in expected)
         {
-            var response = responses[e];
+            var response = responses[e.StatusCode];
+            response.Description.ShouldBe(e.Description);
             response.Content.ShouldBeEmpty();
         }
     }

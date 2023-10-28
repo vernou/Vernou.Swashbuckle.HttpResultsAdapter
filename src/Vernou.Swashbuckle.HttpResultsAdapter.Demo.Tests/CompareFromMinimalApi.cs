@@ -23,7 +23,6 @@ public class CompareWithMinimalApi
 
     [Theory]
     [MemberData(nameof(CheckResponsesData))]
-    //[Fact]
     public async Task CheckResponses(string path)
     {
         // Arrange

@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vernou.Swashbuckle.HttpResu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vernou.Swashbuckle.HttpResultsAdapter.Demo.Tests", "Vernou.Swashbuckle.HttpResultsAdapter.Demo.Tests\Vernou.Swashbuckle.HttpResultsAdapter.Demo.Tests.csproj", "{A7920181-FB56-454F-A99D-013EB510AEF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vernou.Swashbuckle.HttpResultsAdapter.Demo.Tests.WithXmlResponse", "Vernou.Swashbuckle.HttpResultsAdapter.Demo.Tests.WithXmlResponse\Vernou.Swashbuckle.HttpResultsAdapter.Demo.Tests.WithXmlResponse.csproj", "{BB12A4F8-2E43-446A-AD7F-46EB99AE69AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vernou.Swashbuckle.HttpResultsAdapter.Demo.Tests.WithXmlResponse", "Vernou.Swashbuckle.HttpResultsAdapter.Demo.Tests.WithXmlResponse\Vernou.Swashbuckle.HttpResultsAdapter.Demo.Tests.WithXmlResponse.csproj", "{BB12A4F8-2E43-446A-AD7F-46EB99AE69AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vernou.Swashbuckle.HttpResultsAdapter.Demo.WithMinimalApiEndpoints", "Vernou.Swashbuckle.HttpResultsAdapter.Demo.WithMinimalApiEndpoints\Vernou.Swashbuckle.HttpResultsAdapter.Demo.WithMinimalApiEndpoints.csproj", "{82A23FDE-7CCD-459E-AFB8-E135AF195B43}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vernou.Swashbuckle.HttpResultsAdapter.Demo.WithMinimalApiEndpoints", "Vernou.Swashbuckle.HttpResultsAdapter.Demo.WithMinimalApiEndpoints\Vernou.Swashbuckle.HttpResultsAdapter.Demo.WithMinimalApiEndpoints.csproj", "{82A23FDE-7CCD-459E-AFB8-E135AF195B43}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vernou.Swashbuckle.HttpResultsAdapter.Demo.MinimalApi", "Vernou.Swashbuckle.HttpResultsAdapter.Demo.MinimalApi\Vernou.Swashbuckle.HttpResultsAdapter.Demo.MinimalApi.csproj", "{31BE91D0-AA89-49A6-AAC5-0876EA586D7F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{82A23FDE-7CCD-459E-AFB8-E135AF195B43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82A23FDE-7CCD-459E-AFB8-E135AF195B43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82A23FDE-7CCD-459E-AFB8-E135AF195B43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31BE91D0-AA89-49A6-AAC5-0876EA586D7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31BE91D0-AA89-49A6-AAC5-0876EA586D7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31BE91D0-AA89-49A6-AAC5-0876EA586D7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31BE91D0-AA89-49A6-AAC5-0876EA586D7F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

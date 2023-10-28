@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Vernou.Swashbuckle.HttpResultsAdapter.Demo.MinimalApi\Vernou.Swashbuckle.HttpResultsAdapter.Demo.MinimalApi.csproj" />
     <ProjectReference Include="..\Vernou.Swashbuckle.HttpResultsAdapter.Demo\Vernou.Swashbuckle.HttpResultsAdapter.Demo.csproj" />
   </ItemGroup>
 

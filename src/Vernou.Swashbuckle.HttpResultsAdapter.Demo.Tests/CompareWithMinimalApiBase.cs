@@ -15,7 +15,7 @@ public abstract class CompareWithMinimalApiBase
     {
         _sut = sut;
         _contentTypes = contentTypes;
-        _exp = OpenApiDocumentGetter.Get<WebApplicationFactory<MinimalApi.Program>, MinimalApi.Program>();
+        _exp = OpenApiDocumentLocator.FromMinimalApi;
     }
 
     public static IEnumerable<object[]> CheckResponsesData()

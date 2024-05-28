@@ -97,9 +97,17 @@ public class HttpResultsOperationFilter : IOperationFilter
         => type.Namespace == "Microsoft.AspNetCore.Http.HttpResults";
 
     private static Type UnwrapTask(Type type)
-        => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Task<>)
-                  ? type.GetGenericArguments()[0]
-                  : type;
+    {
+        if(type.IsGenericType)
+        {
+            var genericType = type.GetGenericTypeDefinition();
+            if(genericType == typeof(Task<>) || genericType == typeof(ValueTask<>))
+            {
+                return type.GetGenericArguments()[0];
+            }
+        }
+        return type;
+    }
 
     private static string? GetResponseDescription(string statusCode)
         => ResponseDescriptionMap

@@ -52,6 +52,7 @@ internal static class IEndpointRouteBuilderExtentions
     {
         endpoints.MapGet(path, Return<TResult>).ProducesIf(statusCode);
         endpoints.MapGet(path + "-async", Return<Task<TResult>>).ProducesIf(statusCode);
+        endpoints.MapGet(path + "-valuetask", Return<ValueTask<TResult>>).ProducesIf(statusCode);
     }
 
     private static void ProducesIf(this RouteHandlerBuilder builder, int? statusCode)

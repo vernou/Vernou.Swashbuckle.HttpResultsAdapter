@@ -7,6 +7,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
+  <!-- NuGet Metadata -->
   <PropertyGroup>
     <Version>1.0.2</Version>
     <Title>Swashbuckle adapter to HttpResults type</Title>
@@ -17,15 +18,21 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>aspnetcore, swashbuckle, typedresults, httpresults</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/vernou/Vernou.Swashbuckle.HttpResultsAdapter.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
+    <PackageIcon>icon.png</PackageIcon>
+  </PropertyGroup>
+
+  <!-- Source Link -->
+  <PropertyGroup>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/vernou/Vernou.Swashbuckle.HttpResultsAdapter.git</RepositoryUrl>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+    <None Include="..\..\nuget\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Net;
 
 namespace Vernou.Swashbuckle.HttpResultsAdapter.Demo.MinimalApi;
 
@@ -8,7 +10,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(x => x.EnableAnnotations());
 
         var app = builder.Build();
         app.UseSwagger();
@@ -16,6 +18,8 @@ public class Program
 
         // As HttpResultsController
         app.MapGetReturn<Ok>("ok");
+        app.MapGetReturn<Ok>("ok-producestype", (int)HttpStatusCode.NoContent);
+        app.MapGetReturn<Ok>("ok-annotation", metadata: new[] { new SwaggerResponseAttribute(200, "Custom Annotation") });
         app.MapGetReturn<Created>("created");
         app.MapGetReturn<Accepted>("accepted");
         app.MapGetReturn<AcceptedAtRoute>("acceptedatroute");
@@ -48,11 +52,11 @@ public class Program
 
 internal static class IEndpointRouteBuilderExtentions
 {
-    public static void MapGetReturn<TResult>(this IEndpointRouteBuilder endpoints, string path, int? statusCode = null)
+    public static void MapGetReturn<TResult>(this IEndpointRouteBuilder endpoints, string path, int? statusCode = null, object[]? metadata = null)
     {
-        endpoints.MapGet(path, Return<TResult>).ProducesIf(statusCode);
-        endpoints.MapGet(path + "-async", Return<Task<TResult>>).ProducesIf(statusCode);
-        endpoints.MapGet(path + "-valuetask", Return<ValueTask<TResult>>).ProducesIf(statusCode);
+        endpoints.MapGet(path, Return<TResult>).WithMetadata(metadata ?? Array.Empty<object>()).ProducesIf(statusCode);
+        endpoints.MapGet(path + "-async", Return<Task<TResult>>).WithMetadata(metadata ?? Array.Empty<object>()).ProducesIf(statusCode);
+        endpoints.MapGet(path + "-valuetask", Return<ValueTask<TResult>>).WithMetadata(metadata ?? Array.Empty<object>()).ProducesIf(statusCode);
     }
 
     private static void ProducesIf(this RouteHandlerBuilder builder, int? statusCode)

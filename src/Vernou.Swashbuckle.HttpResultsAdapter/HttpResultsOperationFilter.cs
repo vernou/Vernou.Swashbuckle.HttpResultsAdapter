@@ -64,22 +64,36 @@ public class HttpResultsOperationFilter : IOperationFilter
 
             var responseTypes = endpointBuilder.Metadata.Cast<IProducesResponseTypeMetadata>().ToList();
             if(!responseTypes.Any()) return;
-            operation.Responses.Clear();
             foreach(var responseType in responseTypes)
             {
                 var statusCode = responseType.StatusCode.ToString();
-                var oar = new OpenApiResponse { Description = GetResponseDescription(statusCode) };
+
+                // If controller is documented with attributes, correctly documented response is already present but is missing schemas
+                operation.Responses.TryAdd(statusCode, new OpenApiResponse { Description = GetResponseDescription(statusCode) });
+                var oar = operation.Responses[statusCode];
 
                 if(responseType.Type != null && responseType.Type != typeof(void))
                 {
                     var schema = context.SchemaGenerator.GenerateSchema(responseType.Type, context.SchemaRepository);
                     foreach(var contentType in _contentTypes.Value)
                     {
-                        oar.Content.Add(contentType, new OpenApiMediaType { Schema = schema });
+                        if(!oar.Content.TryAdd(contentType, new OpenApiMediaType { Schema = schema }))
+                        {
+                            oar.Content[contentType].Schema = schema;
+                        }
                     }
                 }
+            }
 
-                operation.Responses.Add(statusCode, oar);
+            // This is needed because swashbuckle will add an extra 200 response type when there are no attributes or ActionResult return types to tell it otherwise
+            var definedResponseTypes = responseTypes.Select(x => x.StatusCode.ToString()).Concat(context.ApiDescription.SupportedResponseTypes.Select(x => x.StatusCode.ToString())).ToList();
+            if(definedResponseTypes.Count > 0)
+            {
+                var extraResponseTypes = operation.Responses.Keys.Except(definedResponseTypes).ToList();
+                foreach(var extraResponse in extraResponseTypes)
+                {
+                    operation.Responses.Remove(extraResponse);
+                }
             }
         }
         else if(actionReturnType == typeof(UnauthorizedHttpResult))

@@ -4,7 +4,11 @@ using Vernou.Swashbuckle.HttpResultsAdapter;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options => options.OperationFilter<HttpResultsOperationFilter>());
+builder.Services.AddSwaggerGen(options =>
+{
+    options.OperationFilter<HttpResultsOperationFilter>();
+    options.EnableAnnotations();
+});
 
 var app = builder.Build();
 app.UseSwagger();

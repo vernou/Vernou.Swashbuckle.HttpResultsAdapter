@@ -1,19 +1,45 @@
 ﻿namespace Vernou.Swashbuckle.HttpResultsAdapter.Demo.Controllers;
 
+using global::Swashbuckle.AspNetCore.Annotations;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using System.Net.Mime;
 using System.Threading.Tasks;
 
 public class HttpResultsController
 {
     [HttpGet("ok")]
     public Ok ReturnOk() => TypedResults.Ok();
-
     [HttpGet("ok-async")]
     public async Task<Ok> ReturnOkAsync() => await Task.FromResult(TypedResults.Ok());
 
     [HttpGet("ok-valuetask")]
     public async ValueTask<Ok> ReturnOkValueTask() => await Task.FromResult(TypedResults.Ok());
+
+    [HttpGet("ok-producestype")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    public Ok ReturnOkWithProducesType() => TypedResults.Ok();
+
+    [HttpGet("ok-producestype-async")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    public Task<Ok> ReturnOkWithProducesTypeAsync() => Task.FromResult(TypedResults.Ok());
+
+    [HttpGet("ok-producestype-valuetask")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    public ValueTask<Ok> ReturnOkWithProducesTypeValueTask() => ValueTask.FromResult(TypedResults.Ok());
+
+    [HttpGet("ok-annotation")]
+    [SwaggerResponse(200, "Custom Annotation")]
+    public Ok ReturnOkWithAnnotation() => TypedResults.Ok();
+
+    [HttpGet("ok-annotation-async")]
+    [SwaggerResponse(200, "Custom Annotation")]
+    public Task<Ok> ReturnOkWithAnnotationAsync() => Task.FromResult(TypedResults.Ok());
+
+    [HttpGet("ok-annotation-valuetask")]
+    [SwaggerResponse(200, "Custom Annotation")]
+    public ValueTask<Ok> ReturnOkWithAnnotationValueTask() => ValueTask.FromResult(TypedResults.Ok());
 
     [HttpGet("created")]
     public Created ReturnCreated() => TypedResults.Created("");

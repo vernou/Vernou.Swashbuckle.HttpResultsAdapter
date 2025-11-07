@@ -64,29 +64,50 @@ public class HttpResultsOperationFilter : IOperationFilter
 
             var responseTypes = endpointBuilder.Metadata.Cast<IProducesResponseTypeMetadata>().ToList();
             if(!responseTypes.Any()) return;
-            operation.Responses.Clear();
+
+            CleanSwashbuckleDefaultResponse200(operation, context);
+
             foreach(var responseType in responseTypes)
             {
                 var statusCode = responseType.StatusCode.ToString();
-                var oar = new OpenApiResponse { Description = GetResponseDescription(statusCode) };
+
+                // If controller is documented with attributes, correctly documented response is already present but is missing schemas
+                operation.Responses.TryAdd(statusCode, new OpenApiResponse { Description = GetResponseDescription(statusCode) });
+                var oar = operation.Responses[statusCode];
 
                 if(responseType.Type != null && responseType.Type != typeof(void))
                 {
                     var schema = context.SchemaGenerator.GenerateSchema(responseType.Type, context.SchemaRepository);
                     foreach(var contentType in _contentTypes.Value)
                     {
-                        oar.Content.Add(contentType, new OpenApiMediaType { Schema = schema });
+                        if(!oar.Content.TryAdd(contentType, new OpenApiMediaType { Schema = schema }))
+                        {
+                            oar.Content[contentType].Schema = schema;
+                        }
                     }
                 }
-
-                operation.Responses.Add(statusCode, oar);
             }
         }
         else if(actionReturnType == typeof(UnauthorizedHttpResult))
         {
             operation.Responses.Clear();
             operation.Responses.Add("401", new OpenApiResponse { Description = ReasonPhrases.GetReasonPhrase(401) });
+        }
+    }
 
+    /// <summary>
+    /// Remove the Swashbuckle default response 200 added
+    /// when the operation has none response provided by ASP.NET Core,
+    /// </summary>
+    /// <remarks>
+    /// See :
+    /// https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/v6.9.0/src/Swashbuckle.AspNetCore.SwaggerGen/SwaggerGenerator/SwaggerGenerator.cs#L890
+    /// </remarks>
+    private static void CleanSwashbuckleDefaultResponse200(OpenApiOperation operation, OperationFilterContext context)
+    {
+        if (context.ApiDescription.SupportedResponseTypes.Count == 0 &&  operation.Responses.TryGetValue("200", out var ok))
+        {
+            operation.Responses.Remove("200");
         }
     }
 

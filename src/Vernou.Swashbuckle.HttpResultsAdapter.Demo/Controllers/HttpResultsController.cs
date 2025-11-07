@@ -11,6 +11,7 @@ public class HttpResultsController
 {
     [HttpGet("ok")]
     public Ok ReturnOk() => TypedResults.Ok();
+
     [HttpGet("ok-async")]
     public async Task<Ok> ReturnOkAsync() => await Task.FromResult(TypedResults.Ok());
 

@@ -13,11 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vernou.Swashbuckle.HttpResu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vernou.Swashbuckle.HttpResultsAdapter.Demo.MinimalApi", "Vernou.Swashbuckle.HttpResultsAdapter.Demo.MinimalApi\Vernou.Swashbuckle.HttpResultsAdapter.Demo.MinimalApi.csproj", "{31BE91D0-AA89-49A6-AAC5-0876EA586D7F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

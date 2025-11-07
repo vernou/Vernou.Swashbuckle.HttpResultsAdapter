@@ -64,6 +64,9 @@ public class HttpResultsOperationFilter : IOperationFilter
 
             var responseTypes = endpointBuilder.Metadata.Cast<IProducesResponseTypeMetadata>().ToList();
             if(!responseTypes.Any()) return;
+
+            CleanSwashbuckleDefaultResponse200(operation, context);
+
             foreach(var responseType in responseTypes)
             {
                 var statusCode = responseType.StatusCode.ToString();
@@ -84,23 +87,27 @@ public class HttpResultsOperationFilter : IOperationFilter
                     }
                 }
             }
-
-            // This is needed because swashbuckle will add an extra 200 response type when there are no attributes or ActionResult return types to tell it otherwise
-            var definedResponseTypes = responseTypes.Select(x => x.StatusCode.ToString()).Concat(context.ApiDescription.SupportedResponseTypes.Select(x => x.StatusCode.ToString())).ToList();
-            if(definedResponseTypes.Count > 0)
-            {
-                var extraResponseTypes = operation.Responses.Keys.Except(definedResponseTypes).ToList();
-                foreach(var extraResponse in extraResponseTypes)
-                {
-                    operation.Responses.Remove(extraResponse);
-                }
-            }
         }
         else if(actionReturnType == typeof(UnauthorizedHttpResult))
         {
             operation.Responses.Clear();
             operation.Responses.Add("401", new OpenApiResponse { Description = ReasonPhrases.GetReasonPhrase(401) });
+        }
+    }
 
+    /// <summary>
+    /// Remove the Swashbuckle default response 200 added
+    /// when the operation has none response provided by ASP.NET Core,
+    /// </summary>
+    /// <remarks>
+    /// See :
+    /// https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/v6.9.0/src/Swashbuckle.AspNetCore.SwaggerGen/SwaggerGenerator/SwaggerGenerator.cs#L890
+    /// </remarks>
+    private static void CleanSwashbuckleDefaultResponse200(OpenApiOperation operation, OperationFilterContext context)
+    {
+        if (context.ApiDescription.SupportedResponseTypes.Count == 0 &&  operation.Responses.TryGetValue("200", out var ok))
+        {
+            operation.Responses.Remove("200");
         }
     }
 
